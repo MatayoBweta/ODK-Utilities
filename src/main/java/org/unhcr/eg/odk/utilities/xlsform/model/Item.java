@@ -5,10 +5,17 @@
  */
 package org.unhcr.eg.odk.utilities.xlsform.model;
 
+import java.util.HashMap;
+import org.unhcr.eg.odk.utilities.xlsform.XLSFormModel.SheetColumn;
+
 /**
  *
  * @author UNHCRuser
  */
-public class Choice {
-    
+public class Item {
+
+    private SheetColumn description;
+    private MultiLanguageValue label;
+    private HashMap<String, Object> columns = new HashMap<>();
+
 }

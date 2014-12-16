@@ -131,6 +131,15 @@ public class XLSFormModel {
             return sheetName;
         }
 
+        public static SheetColumn getSheetColumn(String name) {
+            for (SheetColumn sheet : SheetColumn.values()) {
+                if (sheet.name().equals(name)) {
+                    return sheet;
+                }
+            }
+            return null;
+        }
+
         public String value() {
             return value;
         }
