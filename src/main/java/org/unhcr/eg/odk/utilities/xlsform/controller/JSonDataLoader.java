@@ -7,7 +7,7 @@ package org.unhcr.eg.odk.utilities.xlsform.controller;
 
 /**
  *
- * @author UNHCRuser
+ * @author Stanyslas Matayo
  */
 public class JSonDataLoader {
     

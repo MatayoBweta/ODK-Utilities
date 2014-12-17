@@ -15,7 +15,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 
 /**
  *
- * @author UNHCRuser
+ * @author Stanyslas Matayo
  */
 public class ExcelFileUtility {
 

@@ -7,7 +7,7 @@ package org.unhcr.eg.odk.utilities.xlsform;
 
 /**
  *
- * @author UNHCRuser
+ * @author Stanyslas Matayo
  */
 public class XLSFormModel {
 

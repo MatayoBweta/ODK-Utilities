@@ -10,7 +10,7 @@ import java.util.Set;
 
 /**
  *
- * @author UNHCRuser
+ * @author Stanyslas Matayo
  */
 public class Question {
 

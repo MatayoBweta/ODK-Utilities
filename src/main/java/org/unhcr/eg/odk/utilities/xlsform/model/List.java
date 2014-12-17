@@ -9,7 +9,7 @@ import java.util.HashMap;
 
 /**
  *
- * @author UNHCRuser
+ * @author Stanyslas Matayo
  */
 public class List {
 

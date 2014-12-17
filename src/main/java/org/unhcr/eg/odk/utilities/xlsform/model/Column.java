@@ -10,7 +10,7 @@ import org.unhcr.eg.odk.utilities.xlsform.XLSFormModel.SheetColumn;
 
 /**
  *
- * @author UNHCRuser
+ * @author Stanyslas Matayo
  */
 public class Column {
 
