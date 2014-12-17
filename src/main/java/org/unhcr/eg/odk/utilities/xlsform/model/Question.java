@@ -26,7 +26,6 @@ public class Question {
     private Formula relevant;
     private Formula read_only;
     private Formula calculation;
-    private Set<Question> childrens = new HashSet<>();
 
     public Question(Formula type, String name, MultiLanguageValue label, Formula choice_filer, String default_value, MultiLanguageValue hint, Formula constraint, MultiLanguageValue constraint_message, Formula appearance, Formula relevant, Formula read_only, Formula calculation) {
         this.type = type;
@@ -44,12 +43,9 @@ public class Question {
     }
 
     public Question() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+       
     }
 
-    public Set<Question> getChildrens() {
-        return childrens;
-    }
 
     public Formula getType() {
         return type;

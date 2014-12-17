@@ -32,12 +32,9 @@ public class ExcelFileUtility {
                 newName = sheetSource.getSheetName() + "_" + j;
                 newName = newName.substring(Math.max(newName.length() - 31, 0), Math.min(newName.length(), 31));
                 sheetDestinationIndex = destination.getSheetIndex(newName);
-                System.out.println("----newName" + newName);
-                System.out.println("---------------sheetDestinationIndex " + sheetDestinationIndex);
                 j++;
             }
             listOfSheet.add(newName);
-            System.out.println("----newName" + newName);
             Sheet sheetDestination = destination.createSheet(newName);
             copyContent(sheetSource, sheetDestination);
         }
