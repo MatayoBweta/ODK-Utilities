@@ -21,17 +21,24 @@ public class Formula {
     public Formula(XLSFormModel.SheetColumn description, String value) {
         this.description = description;
         this.value = value;
-        processDescription(description, value);
     }
 
-    private void processDescription(XLSFormModel.SheetColumn description, String value) {
-        if (description.equals(XLSFormModel.SheetColumn.SURVEY_TYPE)) {
-            processType(value);
-    
+    public String getChoiceName() {
+        String choice = null;
+        if (isChoiceQuestion()) {
+            choice = value.replace(XLSFormModel.Type_Field.SELECT_MULTIPLE.value(), "")
+                    .replace(XLSFormModel.Type_Field.SELECT_ONE.value(), "")
+                    .replace("or_other", "")
+                    .replace(" ", "");
+
+        } else {
+            choice = NOT_A__CHOICE_COLUMN_DESCRPTION;
         }
+        return choice;
     }
+    public static final String NOT_A__CHOICE_COLUMN_DESCRPTION = "Not a Choice column descrption";
 
-    private void processType(String value) {
-        
-  }
+    public boolean isChoiceQuestion() {
+        return description.equals(XLSFormModel.SheetColumn.SURVEY_TYPE) && (value.contains(XLSFormModel.Type_Field.SELECT_MULTIPLE.value()) || value.contains(XLSFormModel.Type_Field.SELECT_ONE.value()));
+    }
 }

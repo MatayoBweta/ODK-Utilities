@@ -5,6 +5,7 @@
  */
 package org.unhcr.eg.odk.utilities.xlsform.controller;
 
+import java.awt.Choice;
 import java.util.Iterator;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DateUtil;
@@ -14,8 +15,10 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.unhcr.eg.odk.utilities.xlsform.XLSFormModel;
 import org.unhcr.eg.odk.utilities.xlsform.model.Column;
 import org.unhcr.eg.odk.utilities.xlsform.model.Formula;
+import org.unhcr.eg.odk.utilities.xlsform.model.Item;
 import org.unhcr.eg.odk.utilities.xlsform.model.MultiLanguageValue;
 import org.unhcr.eg.odk.utilities.xlsform.model.Question;
+import org.unhcr.eg.odk.utilities.xlsform.model.QuestionPosition;
 import org.unhcr.eg.odk.utilities.xlsform.model.Survey;
 
 /**
@@ -36,7 +39,8 @@ public class SheetProcessor {
                 loadColumns(cellIterator, survey);
             } else {
                 Question q = createQuestion(cellIterator, survey);
-                
+                String position = getQuestionPosition(i, q, survey);
+                survey.getQuestions().put(new QuestionPosition(position, q.getName()), q);
             }
             i++;
         }
@@ -51,6 +55,28 @@ public class SheetProcessor {
             String columnName = cell.getStringCellValue();
             Column c = new Column(columnName);
             survey.getColumns().put(j, c);
+            j++;
+        }
+    }
+
+    protected static void loadChoicesColumns(Iterator<Cell> cellIterator, Survey survey) {
+        int j = 0;
+        while (cellIterator.hasNext()) {
+            Cell cell = cellIterator.next();
+            String columnName = cell.getStringCellValue();
+            Column c = new Column(columnName);
+            survey.getChoicesColumns().put(j, c);
+            j++;
+        }
+    }
+
+    protected static void loadSettingsColumns(Iterator<Cell> cellIterator, Survey survey) {
+        int j = 0;
+        while (cellIterator.hasNext()) {
+            Cell cell = cellIterator.next();
+            String columnName = cell.getStringCellValue();
+            Column c = new Column(columnName);
+            survey.getSettingsColumns().put(j, c);
             j++;
         }
     }
@@ -118,7 +144,33 @@ public class SheetProcessor {
             } else if (c.getName().equals(XLSFormModel.SheetColumn.SURVEY_RELEVANT.value())) {
                 q.setRelevant(new Formula(XLSFormModel.SheetColumn.SURVEY_RELEVANT, cell.getStringCellValue()));
             } else if (c.getName().equals(XLSFormModel.SheetColumn.SURVEY_TYPE.value())) {
-                q.setType(new Formula(XLSFormModel.SheetColumn.SURVEY_TYPE, cell.getStringCellValue()));
+                final Formula formula = new Formula(XLSFormModel.SheetColumn.SURVEY_TYPE, cell.getStringCellValue());
+                q.setType(formula);
+            }
+            j++;
+        }
+        return q;
+    }
+
+    protected static Item createChoice(Iterator<Cell> cellIterator, Survey survey) {
+        Item q = new Item();
+        int j = 0;
+        while (cellIterator.hasNext()) {
+            Cell cell = cellIterator.next();
+            Column c = survey.getChoicesColumns().get(j);
+            if (c.getName().equals(XLSFormModel.SheetColumn.CHOICE_LIST_NAME.value())) {
+                q.setListName(cell.getStringCellValue());
+            } else if (c.getName().equals(XLSFormModel.SheetColumn.CHOICE_LABEL.value())) {
+                MultiLanguageValue label = q.getLabel();
+                if (c.getLanguage() != null) {
+                    label.addValuePerLanguage(c.getLanguage(), cell.getStringCellValue());
+                } else if (survey.getSettings().get(XLSFormModel.SheetColumn.SETTINGS_DEFAULT_LANGUAGE.value()) != null) {
+                    label.addValuePerLanguage(survey.getSettings().get(XLSFormModel.SheetColumn.SETTINGS_DEFAULT_LANGUAGE.value()), cell.getStringCellValue());
+                } else {
+                    label.addValuePerLanguage(survey.getDefault_language(), cell.getStringCellValue());
+                }
+            } else {
+                q.getColumns().put(c.getName(), null);
             }
             j++;
         }
@@ -134,7 +186,21 @@ public class SheetProcessor {
 
     public static Survey processChoicesSheet(Workbook wb, Survey survey) {
         Sheet sheet = wb.getSheet(XLSFormModel.SheetName.CHOICES.value());
-
+        //Iterate through each rows from first sheet
+        Iterator<Row> rowIterator = sheet.iterator();
+        int i = 0;
+        while (rowIterator.hasNext()) {
+            Row row = rowIterator.next(); //For each row, iterate through each columns
+            Iterator<Cell> cellIterator = row.cellIterator();
+            if (i == 0) {
+                // loadColumns(cellIterator, survey);
+            } else {
+                Question q = createQuestion(cellIterator, survey);
+                String position = getQuestionPosition(i, q, survey);
+                survey.getQuestions().put(new QuestionPosition(position, q.getName()), q);
+            }
+            i++;
+        }
         return survey;
 
     }
@@ -182,6 +248,11 @@ public class SheetProcessor {
 
         }
 
+    }
+
+    private static String getQuestionPosition(int i, Question q, Survey survey) {
+
+        return Integer.toString(i);
     }
 
 }

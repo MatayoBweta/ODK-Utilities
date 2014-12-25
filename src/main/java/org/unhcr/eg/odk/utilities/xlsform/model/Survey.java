@@ -15,9 +15,12 @@ import java.util.Set;
 public class Survey {
 
     private final HashMap<Integer, Column> columns = new HashMap<>();
+    private final HashMap<Integer, Column> choicesColumns = new HashMap<>();
+    private final HashMap<Integer, Column> settingsColumns = new HashMap<>();
+
     private final HashMap<String, String> settings = new HashMap<>();
     private final HashMap<QuestionPosition, Question> questions = new HashMap<>();
-    private final HashMap<Integer, List> choices = new HashMap<>();
+    private final HashMap<String, ListItem> choices = new HashMap<>();
     private String default_language;
     private final static String DEFAULT_LANGUAGE = "ENG";
 
@@ -25,6 +28,16 @@ public class Survey {
         return columns;
     }
 
+    public HashMap<Integer, Column> getChoicesColumns() {
+        return choicesColumns;
+    }
+
+    public HashMap<Integer, Column> getSettingsColumns() {
+        return settingsColumns;
+    }
+
+    
+    
     public HashMap<String, String> getSettings() {
         return settings;
     }
@@ -33,7 +46,7 @@ public class Survey {
         return questions;
     }
 
-    public HashMap<Integer, List> getChoices() {
+    public HashMap<String, ListItem> getChoices() {
         return choices;
     }
 
@@ -49,10 +62,10 @@ public class Survey {
     }
 
     public String addNextQuestion(Question question) {
-        
+
         Set<QuestionPosition> questionPositions = questions.keySet();
         for (QuestionPosition next : questionPositions) {
-            
+
         }
 
         return null;

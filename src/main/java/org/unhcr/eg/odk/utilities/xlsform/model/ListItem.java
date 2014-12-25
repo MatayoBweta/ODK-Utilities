@@ -11,12 +11,12 @@ import java.util.HashMap;
  *
  * @author Stanyslas Matayo
  */
-public class List {
+public class ListItem {
 
     private final String name;
     private final HashMap<String, Item> listOfItems = new HashMap<>();
 
-    public List(String name) {
+    public ListItem(String name) {
         this.name = name;
     }
 
