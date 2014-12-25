@@ -193,11 +193,9 @@ public class SheetProcessor {
             Row row = rowIterator.next(); //For each row, iterate through each columns
             Iterator<Cell> cellIterator = row.cellIterator();
             if (i == 0) {
-                // loadColumns(cellIterator, survey);
+                loadChoicesColumns(cellIterator, survey);
             } else {
-                Question q = createQuestion(cellIterator, survey);
-                String position = getQuestionPosition(i, q, survey);
-                survey.getQuestions().put(new QuestionPosition(position, q.getName()), q);
+                Item q = createChoice(cellIterator, survey);
             }
             i++;
         }
