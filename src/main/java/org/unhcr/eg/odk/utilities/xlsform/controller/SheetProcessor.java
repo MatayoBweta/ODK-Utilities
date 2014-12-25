@@ -37,7 +37,6 @@ public class SheetProcessor {
             } else {
                 Question q = createQuestion(cellIterator, survey);
                 
-
             }
             i++;
         }

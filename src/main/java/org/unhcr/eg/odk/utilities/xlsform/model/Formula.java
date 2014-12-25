@@ -21,6 +21,17 @@ public class Formula {
     public Formula(XLSFormModel.SheetColumn description, String value) {
         this.description = description;
         this.value = value;
+        processDescription(description, value);
     }
 
+    private void processDescription(XLSFormModel.SheetColumn description, String value) {
+        if (description.equals(XLSFormModel.SheetColumn.SURVEY_TYPE)) {
+            processType(value);
+    
+        }
+    }
+
+    private void processType(String value) {
+        
+  }
 }
