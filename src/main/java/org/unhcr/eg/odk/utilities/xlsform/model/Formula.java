@@ -23,23 +23,8 @@ public class Formula {
         this.value = value;
     }
 
-    public String getChoiceName() {
-        String choice = null;
-        if (isChoiceQuestion()) {
-            choice = value.replace(XLSFormModel.Type_Field.SELECT_MULTIPLE.value(), "")
-                    .replace(XLSFormModel.Type_Field.SELECT_ONE.value(), "")
-                    .replace("or_other", "")
-                    .replace(" ", "");
-
-        } else {
-            choice = NOT_A__CHOICE_COLUMN_DESCRPTION;
-        }
-        return choice;
-    }
-    public static final String NOT_A__CHOICE_COLUMN_DESCRPTION = "Not a Choice column descrption";
-
-    public boolean isChoiceQuestion() {
-        return column.equals(XLSFormModel.SheetColumn.SURVEY_TYPE) && (value.contains(XLSFormModel.Type_Field.SELECT_MULTIPLE.value()) || value.contains(XLSFormModel.Type_Field.SELECT_ONE.value()));
+    public String getValue() {
+        return value;
     }
 
     public XLSFormModel.SheetColumn getColumn() {

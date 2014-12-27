@@ -5,16 +5,13 @@
  */
 package org.unhcr.eg.odk.utilities.xlsform.model;
 
-import java.util.HashSet;
-import java.util.Set;
-
 /**
  *
  * @author Stanyslas Matayo
  */
 public class Question {
 
-    private Formula type;
+    private QuestionTypeFormula type;
     private String name;
     private MultiLanguageValue label;
     private Formula choice_filer;
@@ -27,7 +24,7 @@ public class Question {
     private Formula read_only;
     private Formula calculation;
 
-    public Question(Formula type, String name, MultiLanguageValue label, Formula choice_filer, String default_value, MultiLanguageValue hint, Formula constraint, MultiLanguageValue constraint_message, Formula appearance, Formula relevant, Formula read_only, Formula calculation) {
+    public Question(QuestionTypeFormula type, String name, MultiLanguageValue label, Formula choice_filer, String default_value, MultiLanguageValue hint, Formula constraint, MultiLanguageValue constraint_message, Formula appearance, Formula relevant, Formula read_only, Formula calculation) {
         this.type = type;
         this.name = name;
         this.label = label;
@@ -47,11 +44,11 @@ public class Question {
     }
 
 
-    public Formula getType() {
+    public QuestionTypeFormula getType() {
         return type;
     }
 
-    public void setType(Formula type) {
+    public void setType(QuestionTypeFormula type) {
         this.type = type;
     }
 

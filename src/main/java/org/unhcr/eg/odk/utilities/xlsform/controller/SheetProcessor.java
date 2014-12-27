@@ -21,11 +21,15 @@ import org.unhcr.eg.odk.utilities.xlsform.model.ListItem;
 import org.unhcr.eg.odk.utilities.xlsform.model.MultiLanguageValue;
 import org.unhcr.eg.odk.utilities.xlsform.model.Question;
 import org.unhcr.eg.odk.utilities.xlsform.model.QuestionPosition;
+import org.unhcr.eg.odk.utilities.xlsform.model.QuestionTypeFormula;
 import org.unhcr.eg.odk.utilities.xlsform.model.Survey;
 
 /**
  *
- * @author Stanyslas Matayo
+ * @author Stanyslas Matayo This class will help to upload the content of excel
+ * sheet describe for ODK Collection Platform and transform it in Java Object
+ * The transformation to Java Object will facilitate the conversation to another
+ * format if is needed
  */
 public class SheetProcessor {
 
@@ -146,7 +150,7 @@ public class SheetProcessor {
             } else if (c.getName().equals(XLSFormModel.SheetColumn.SURVEY_RELEVANT.value())) {
                 q.setRelevant(new Formula(XLSFormModel.SheetColumn.SURVEY_RELEVANT, cell.getStringCellValue()));
             } else if (c.getName().equals(XLSFormModel.SheetColumn.SURVEY_TYPE.value())) {
-                final Formula formula = new Formula(XLSFormModel.SheetColumn.SURVEY_TYPE, cell.getStringCellValue());
+                final QuestionTypeFormula formula = new QuestionTypeFormula(XLSFormModel.SheetColumn.SURVEY_TYPE, cell.getStringCellValue());
                 q.setType(formula);
             }
             j++;
@@ -227,9 +231,7 @@ public class SheetProcessor {
         while (cellIterator.hasNext()) {
             Cell cell = cellIterator.next();
             Column c = survey.getSettingsColumns().get(j);
-            {
-                survey.getSettings().put(c.getName(), cell.getStringCellValue());
-            }
+            survey.getSettings().put(c.getName(), cell.getStringCellValue());
             j++;
         }
         return survey;
@@ -241,7 +243,6 @@ public class SheetProcessor {
         int i = 0;
         while (rowIterator.hasNext()) {
             Row row = rowIterator.next();
-
             i++;
             //For each row, iterate through each columns
             Iterator<Cell> cellIterator = row.cellIterator();
@@ -307,6 +308,8 @@ public class SheetProcessor {
                 next = Integer.parseInt(getLastNumber) + 1;
                 return nextValue = next.toString();
             }
+            
+            
         }
         return nextValue;
     }
