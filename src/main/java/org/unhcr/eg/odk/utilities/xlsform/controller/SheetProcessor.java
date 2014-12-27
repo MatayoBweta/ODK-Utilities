@@ -5,8 +5,9 @@
  */
 package org.unhcr.eg.odk.utilities.xlsform.controller;
 
-import java.awt.Choice;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.StringTokenizer;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
@@ -16,6 +17,7 @@ import org.unhcr.eg.odk.utilities.xlsform.XLSFormModel;
 import org.unhcr.eg.odk.utilities.xlsform.model.Column;
 import org.unhcr.eg.odk.utilities.xlsform.model.Formula;
 import org.unhcr.eg.odk.utilities.xlsform.model.Item;
+import org.unhcr.eg.odk.utilities.xlsform.model.ListItem;
 import org.unhcr.eg.odk.utilities.xlsform.model.MultiLanguageValue;
 import org.unhcr.eg.odk.utilities.xlsform.model.Question;
 import org.unhcr.eg.odk.utilities.xlsform.model.QuestionPosition;
@@ -170,7 +172,7 @@ public class SheetProcessor {
                     label.addValuePerLanguage(survey.getDefault_language(), cell.getStringCellValue());
                 }
             } else {
-                q.getColumns().put(c.getName(), null);
+                q.getColumns().put(c.getName(), cell.getStringCellValue());
             }
             j++;
         }
@@ -179,9 +181,20 @@ public class SheetProcessor {
 
     public static Survey processSettingsSheet(Workbook wb, Survey survey) {
         Sheet sheet = wb.getSheet(XLSFormModel.SheetName.SETTINGS.value());
-
+        //Iterate through each rows from first sheet
+        Iterator<Row> rowIterator = sheet.iterator();
+        int i = 0;
+        while (rowIterator.hasNext()) {
+            Row row = rowIterator.next(); //For each row, iterate through each columns
+            Iterator<Cell> cellIterator = row.cellIterator();
+            if (i == 0) {
+                loadSettingsColumns(cellIterator, survey);
+            } else if (i == 1) {
+                survey = createSetting(cellIterator, survey);
+            }
+            i++;
+        }
         return survey;
-
     }
 
     public static Survey processChoicesSheet(Workbook wb, Survey survey) {
@@ -196,11 +209,30 @@ public class SheetProcessor {
                 loadChoicesColumns(cellIterator, survey);
             } else {
                 Item q = createChoice(cellIterator, survey);
+                ListItem listItem = survey.getChoices().get(q.getListName());
+                if (listItem == null) {
+                    listItem = new ListItem(q.getListName());
+                }
+                listItem.getListOfItems().put(q.getName(), q);
+                survey.getChoices().put(listItem.getName(), listItem);
             }
             i++;
         }
         return survey;
 
+    }
+
+    protected static Survey createSetting(Iterator<Cell> cellIterator, Survey survey) {
+        int j = 0;
+        while (cellIterator.hasNext()) {
+            Cell cell = cellIterator.next();
+            Column c = survey.getSettingsColumns().get(j);
+            {
+                survey.getSettings().put(c.getName(), cell.getStringCellValue());
+            }
+            j++;
+        }
+        return survey;
     }
 
     protected static void copyContent(Sheet sheetSource) {
@@ -249,8 +281,34 @@ public class SheetProcessor {
     }
 
     private static String getQuestionPosition(int i, Question q, Survey survey) {
-
-        return Integer.toString(i);
+        Integer next;
+        String nextValue = null;
+        HashMap<Integer, Integer> tokens = new HashMap<>();
+        if (survey.getNextAction().equals(Survey.NextAction.GIVE_NEXT)) {
+            String getLastNumber = survey.getCurrentQuestionNumber();
+            if (getLastNumber.contains("#")) {
+                int tokenPlace = 0;
+                for (StringTokenizer stringTokenizer = new StringTokenizer(getLastNumber); stringTokenizer.hasMoreTokens();) {
+                    String token = stringTokenizer.nextToken();
+                    tokenPlace++;
+                    tokens.put(tokenPlace, Integer.parseInt(token));
+                }
+                next = tokens.get(tokenPlace) + 1;
+                for (int j = 1; j <= tokenPlace; j++) {
+                    if (j == 1) {
+                        nextValue = Integer.toString(tokens.get(j));
+                    } else if (j < tokenPlace) {
+                        nextValue = nextValue.concat("#").concat(Integer.toString(tokens.get(j)));
+                    } else if (j == tokenPlace) {
+                        nextValue = nextValue.concat("#").concat(next.toString());
+                    }
+                }
+            } else {
+                next = Integer.parseInt(getLastNumber) + 1;
+                return nextValue = next.toString();
+            }
+        }
+        return nextValue;
     }
 
 }

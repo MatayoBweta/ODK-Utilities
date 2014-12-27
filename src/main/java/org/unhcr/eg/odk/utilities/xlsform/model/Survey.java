@@ -6,7 +6,6 @@
 package org.unhcr.eg.odk.utilities.xlsform.model;
 
 import java.util.HashMap;
-import java.util.Set;
 
 /**
  *
@@ -23,6 +22,16 @@ public class Survey {
     private final HashMap<String, ListItem> choices = new HashMap<>();
     private String default_language;
     private final static String DEFAULT_LANGUAGE = "ENG";
+    private NextAction nextAction = NextAction.GIVE_NEXT;
+    private String currentQuestionNumber = "";
+
+    public enum NextAction {
+
+        GIVE_NEXT,
+        GIVE_PARENT_NEXT,
+        GIVE_CHILD;
+
+    }
 
     public HashMap<Integer, Column> getColumns() {
         return columns;
@@ -36,8 +45,6 @@ public class Survey {
         return settingsColumns;
     }
 
-    
-    
     public HashMap<String, String> getSettings() {
         return settings;
     }
@@ -61,14 +68,20 @@ public class Survey {
         this.default_language = default_language;
     }
 
-    public String addNextQuestion(Question question) {
+    public NextAction getNextAction() {
+        return nextAction;
+    }
 
-        Set<QuestionPosition> questionPositions = questions.keySet();
-        for (QuestionPosition next : questionPositions) {
+    public void setNextAction(NextAction nextAction) {
+        this.nextAction = nextAction;
+    }
 
-        }
+    public String getCurrentQuestionNumber() {
+        return currentQuestionNumber;
+    }
 
-        return null;
+    public void setCurrentQuestionNumber(String currentQuestionNumber) {
+        this.currentQuestionNumber = currentQuestionNumber;
     }
 
 }

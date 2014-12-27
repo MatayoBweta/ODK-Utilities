@@ -14,12 +14,12 @@ import org.unhcr.eg.odk.utilities.xlsform.XLSFormModel;
  */
 public class Formula {
 
-    private final XLSFormModel.SheetColumn description;
+    private final XLSFormModel.SheetColumn column;
     private String value;
     private static final Logger LOG = Logger.getLogger(Formula.class.getName());
 
-    public Formula(XLSFormModel.SheetColumn description, String value) {
-        this.description = description;
+    public Formula(XLSFormModel.SheetColumn column, String value) {
+        this.column = column;
         this.value = value;
     }
 
@@ -39,6 +39,11 @@ public class Formula {
     public static final String NOT_A__CHOICE_COLUMN_DESCRPTION = "Not a Choice column descrption";
 
     public boolean isChoiceQuestion() {
-        return description.equals(XLSFormModel.SheetColumn.SURVEY_TYPE) && (value.contains(XLSFormModel.Type_Field.SELECT_MULTIPLE.value()) || value.contains(XLSFormModel.Type_Field.SELECT_ONE.value()));
+        return column.equals(XLSFormModel.SheetColumn.SURVEY_TYPE) && (value.contains(XLSFormModel.Type_Field.SELECT_MULTIPLE.value()) || value.contains(XLSFormModel.Type_Field.SELECT_ONE.value()));
     }
+
+    public XLSFormModel.SheetColumn getColumn() {
+        return column;
+    }
+
 }
