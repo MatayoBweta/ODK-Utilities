@@ -45,8 +45,8 @@ public class SheetProcessor {
                 loadColumns(cellIterator, survey);
             } else {
                 Question q = createQuestion(cellIterator, survey);
-                String position = getQuestionPosition(i, q, survey);
-                survey.getQuestions().put(new QuestionPosition(position, q.getName()), q);
+                String position = getQuestionPosition(q, survey);
+                survey.getQuestions().put(new QuestionPosition(i, position, q.getName()), q);
             }
             i++;
         }
@@ -281,19 +281,15 @@ public class SheetProcessor {
 
     }
 
-    private static String getQuestionPosition(int i, Question q, Survey survey) {
+    protected static String getQuestionPosition(Question q, Survey survey) {
         Integer next;
         String nextValue = null;
-        HashMap<Integer, Integer> tokens = new HashMap<>();
+
         if (survey.getNextAction().equals(Survey.NextAction.GIVE_NEXT)) {
             String getLastNumber = survey.getCurrentQuestionNumber();
             if (getLastNumber.contains("#")) {
-                int tokenPlace = 0;
-                for (StringTokenizer stringTokenizer = new StringTokenizer(getLastNumber); stringTokenizer.hasMoreTokens();) {
-                    String token = stringTokenizer.nextToken();
-                    tokenPlace++;
-                    tokens.put(tokenPlace, Integer.parseInt(token));
-                }
+                HashMap<Integer, Integer> tokens = new HashMap<>();
+                int tokenPlace = extractTokens(getLastNumber, tokens);
                 next = tokens.get(tokenPlace) + 1;
                 for (int j = 1; j <= tokenPlace; j++) {
                     if (j == 1) {
@@ -306,12 +302,68 @@ public class SheetProcessor {
                 }
             } else {
                 next = Integer.parseInt(getLastNumber) + 1;
-                return nextValue = next.toString();
+                nextValue = next.toString();
             }
-            
-            
+        } else if (survey.getNextAction().equals(Survey.NextAction.GIVE_PARENT_NEXT)) {
+            nextValue = getNextParentNumber(survey.getCurrentQuestionNumber());
+        } else if (survey.getNextAction().equals(Survey.NextAction.GIVE_CHILD)) {
+            nextValue = survey.getCurrentQuestionNumber().concat("#").concat("1");
         }
+
+        if (q.getType().isParentQuestion()) {
+            survey.setNextAction(Survey.NextAction.GIVE_CHILD);
+        } else if (q.getType().isEndOfParentQuestion()) {
+            survey.setNextAction(Survey.NextAction.GIVE_PARENT_NEXT);
+        } else {
+            survey.setNextAction(Survey.NextAction.GIVE_NEXT);
+        }
+        survey.setCurrentQuestionNumber(nextValue);
         return nextValue;
+    }
+
+    public static int extractTokens(String getLastNumber, HashMap<Integer, Integer> tokens) throws NumberFormatException {
+        int tokenPlace = 0;
+        for (StringTokenizer stringTokenizer = new StringTokenizer(getLastNumber, "#"); stringTokenizer.hasMoreTokens();) {
+            String token = stringTokenizer.nextToken();
+            tokenPlace++;
+            tokens.put(tokenPlace, Integer.parseInt(token));
+        }
+        return tokenPlace;
+    }
+
+    private static String getParentNumber(String currentQuestionNumber) {
+        String parentID = null;
+        HashMap<Integer, Integer> tokens = new HashMap<>();
+        if (currentQuestionNumber.contains("#")) {
+            int tokenPlace = extractTokens(currentQuestionNumber, tokens);
+            for (int j = 1; j < tokenPlace; j++) {
+                if (j == 1) {
+                    parentID = Integer.toString(tokens.get(j));
+                } else if (j < tokenPlace) {
+                    parentID = parentID.concat("#").concat(Integer.toString(tokens.get(j)));
+                }
+            }
+        }
+        return parentID;
+    }
+
+    private static String getNextParentNumber(String currentQuestionNumber) {
+        String nextID = null;
+        HashMap<Integer, Integer> tokens = new HashMap<>();
+        if (currentQuestionNumber.contains("#")) {
+            int tokenPlace = extractTokens(currentQuestionNumber, tokens);
+            for (int j = 1; j < tokenPlace; j++) {
+                if (j == 1) {
+                    nextID = Integer.toString(tokens.get(j));
+                } else if (j < tokenPlace) {
+                    nextID = nextID.concat("#").concat(Integer.toString(tokens.get(j)));
+                } else if (j == tokenPlace) {
+                    int next = tokens.get(j);
+                    nextID = nextID.concat("#").concat(Integer.toString(next + 1));
+                }
+            }
+        }
+        return nextID;
     }
 
 }
