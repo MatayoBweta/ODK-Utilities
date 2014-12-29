@@ -5,7 +5,7 @@
  */
 package org.unhcr.eg.odk.utilities.xlsform.controller;
 
-import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 import org.apache.poi.ss.usermodel.Cell;
@@ -175,8 +175,10 @@ public class SheetProcessor {
                 } else {
                     label.addValuePerLanguage(survey.getDefault_language(), cell.getStringCellValue());
                 }
+            } else if (c.getName().equals(XLSFormModel.SheetColumn.CHOICE_NAME.value())) {
+                q.setName(getWithIntCelValue(cell).toString());
             } else {
-                q.getColumns().put(c.getName(), cell.getStringCellValue());
+                q.getColumns().put(c.getName(), getCelValue(cell));
             }
             j++;
         }
@@ -250,78 +252,121 @@ public class SheetProcessor {
             while (cellIterator.hasNext()) {
                 Cell cell = cellIterator.next();
                 j++;
-                switch (cell.getCellType()) {
-                    case Cell.CELL_TYPE_BOOLEAN:
-                        cell.getBooleanCellValue();
-                        break;
-                    case Cell.CELL_TYPE_NUMERIC:
-                        if (DateUtil.isCellDateFormatted(cell)) {
-                            cell.getDateCellValue();
-                        } else {
-                            cell.getNumericCellValue();
-                        }
-                        break;
-                    case Cell.CELL_TYPE_STRING:
-                        cell.getRichStringCellValue();
-                        break;
-                    case Cell.CELL_TYPE_BLANK:
-                        cell.getStringCellValue();
-                        break;
-                    case Cell.CELL_TYPE_ERROR:
-                        cell.getErrorCellValue();
-                        break;
-                    case Cell.CELL_TYPE_FORMULA:
-                        cell.getCellFormula();
-                        break;
-                }
-
+                getCelValue(cell);
             }
 
         }
 
     }
 
+    public static Object getCelValue(Cell cell) {
+        Object cellValue = null;
+        switch (cell.getCellType()) {
+            case Cell.CELL_TYPE_BOOLEAN:
+                cellValue = cell.getBooleanCellValue();
+                break;
+            case Cell.CELL_TYPE_NUMERIC:
+                if (DateUtil.isCellDateFormatted(cell)) {
+                    cellValue = cell.getDateCellValue();
+                } else {
+                    cellValue = cell.getNumericCellValue();
+                }
+                break;
+            case Cell.CELL_TYPE_STRING:
+                cellValue = cell.getStringCellValue();
+                break;
+            case Cell.CELL_TYPE_BLANK:
+                cellValue = new String("");
+                break;
+            case Cell.CELL_TYPE_ERROR:
+                cellValue = cell.getErrorCellValue();
+                break;
+            case Cell.CELL_TYPE_FORMULA:
+                cellValue = cell.getCellFormula();
+                break;
+        }
+        return cellValue;
+    }
+
+    public static Object getWithIntCelValue(Cell cell) {
+        Object cellValue = null;
+        switch (cell.getCellType()) {
+            case Cell.CELL_TYPE_BOOLEAN:
+                cellValue = cell.getBooleanCellValue();
+                break;
+            case Cell.CELL_TYPE_NUMERIC:
+                if (DateUtil.isCellDateFormatted(cell)) {
+                    cellValue = cell.getDateCellValue();
+                } else {
+                    cellValue = cell.getNumericCellValue();
+                    Double i = (Double) cellValue;
+                    cellValue = i.intValue();
+                }
+                break;
+            case Cell.CELL_TYPE_STRING:
+                cellValue = cell.getStringCellValue();
+                break;
+            case Cell.CELL_TYPE_BLANK:
+                cellValue = new String("");
+                break;
+            case Cell.CELL_TYPE_ERROR:
+                cellValue = cell.getErrorCellValue();
+                break;
+            case Cell.CELL_TYPE_FORMULA:
+                cellValue = cell.getCellFormula();
+                break;
+        }
+        return cellValue;
+    }
+
     protected static String getQuestionPosition(Question q, Survey survey) {
-        Integer next;
-        String nextValue = null;
+        String questionNumber = survey.getCurrentQuestionNumber();
 
         if (survey.getNextAction().equals(Survey.NextAction.GIVE_NEXT)) {
             String getLastNumber = survey.getCurrentQuestionNumber();
-            if (getLastNumber.contains("#")) {
-                HashMap<Integer, Integer> tokens = new HashMap<>();
-                int tokenPlace = extractTokens(getLastNumber, tokens);
-                next = tokens.get(tokenPlace) + 1;
-                for (int j = 1; j <= tokenPlace; j++) {
-                    if (j == 1) {
-                        nextValue = Integer.toString(tokens.get(j));
-                    } else if (j < tokenPlace) {
-                        nextValue = nextValue.concat("#").concat(Integer.toString(tokens.get(j)));
-                    } else if (j == tokenPlace) {
-                        nextValue = nextValue.concat("#").concat(next.toString());
-                    }
-                }
+            if (!q.getType().isEndOfParentQuestion()) {
+                questionNumber = getNextToken(getLastNumber);
             } else {
-                next = Integer.parseInt(getLastNumber) + 1;
-                nextValue = next.toString();
+                questionNumber = getParentNumber(getLastNumber);
             }
-        } else if (survey.getNextAction().equals(Survey.NextAction.GIVE_PARENT_NEXT)) {
-            nextValue = getNextParentNumber(survey.getCurrentQuestionNumber());
         } else if (survey.getNextAction().equals(Survey.NextAction.GIVE_CHILD)) {
-            nextValue = survey.getCurrentQuestionNumber().concat("#").concat("1");
+            questionNumber = survey.getCurrentQuestionNumber().concat("#").concat("1");
         }
 
         if (q.getType().isParentQuestion()) {
             survey.setNextAction(Survey.NextAction.GIVE_CHILD);
-        } else if (q.getType().isEndOfParentQuestion()) {
-            survey.setNextAction(Survey.NextAction.GIVE_PARENT_NEXT);
         } else {
             survey.setNextAction(Survey.NextAction.GIVE_NEXT);
         }
-        survey.setCurrentQuestionNumber(nextValue);
+
+        survey.setCurrentQuestionNumber(questionNumber);
+        return questionNumber;
+    }
+
+    public static String getNextToken(String getLastNumber) throws NumberFormatException {
+        String nextValue = null;
+        Integer next;
+        if (getLastNumber.contains("#")) {
+            TreeMap<Integer, Integer> tokens = new TreeMap<>();
+            int tokenPlace = extractTokens(getLastNumber, tokens);
+            next = tokens.get(tokenPlace) + 1;
+            for (int j = 1; j <= tokenPlace; j++) {
+                if (j == 1) {
+                    nextValue = Integer.toString(tokens.get(j));
+                } else if (j < tokenPlace) {
+                    nextValue = nextValue.concat("#").concat(Integer.toString(tokens.get(j)));
+                } else if (j == tokenPlace) {
+                    nextValue = nextValue.concat("#").concat(next.toString());
+                }
+            }
+        } else {
+            next = Integer.parseInt(getLastNumber) + 1;
+            nextValue = next.toString();
+        }
         return nextValue;
     }
 
-    public static int extractTokens(String getLastNumber, HashMap<Integer, Integer> tokens) throws NumberFormatException {
+    public static int extractTokens(String getLastNumber, TreeMap<Integer, Integer> tokens) throws NumberFormatException {
         int tokenPlace = 0;
         for (StringTokenizer stringTokenizer = new StringTokenizer(getLastNumber, "#"); stringTokenizer.hasMoreTokens();) {
             String token = stringTokenizer.nextToken();
@@ -333,7 +378,7 @@ public class SheetProcessor {
 
     private static String getParentNumber(String currentQuestionNumber) {
         String parentID = null;
-        HashMap<Integer, Integer> tokens = new HashMap<>();
+        TreeMap<Integer, Integer> tokens = new TreeMap<>();
         if (currentQuestionNumber.contains("#")) {
             int tokenPlace = extractTokens(currentQuestionNumber, tokens);
             for (int j = 1; j < tokenPlace; j++) {
@@ -348,21 +393,7 @@ public class SheetProcessor {
     }
 
     private static String getNextParentNumber(String currentQuestionNumber) {
-        String nextID = null;
-        HashMap<Integer, Integer> tokens = new HashMap<>();
-        if (currentQuestionNumber.contains("#")) {
-            int tokenPlace = extractTokens(currentQuestionNumber, tokens);
-            for (int j = 1; j < tokenPlace; j++) {
-                if (j == 1) {
-                    nextID = Integer.toString(tokens.get(j));
-                } else if (j < tokenPlace) {
-                    nextID = nextID.concat("#").concat(Integer.toString(tokens.get(j)));
-                } else if (j == tokenPlace) {
-                    int next = tokens.get(j);
-                    nextID = nextID.concat("#").concat(Integer.toString(next + 1));
-                }
-            }
-        }
+        String nextID = getNextToken(getParentNumber(currentQuestionNumber));
         return nextID;
     }
 

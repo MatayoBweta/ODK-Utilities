@@ -15,7 +15,7 @@ public class QuestionTypeFormula extends Formula {
 
     public QuestionTypeFormula(XLSFormModel.SheetColumn column, String value) {
         super(column, value);
-        if (column.equals(XLSFormModel.SheetColumn.SURVEY_TYPE)) {
+        if (!column.equals(XLSFormModel.SheetColumn.SURVEY_TYPE)) {
             throw new IllegalArgumentException("The formula should be for question type only");
         }
     }

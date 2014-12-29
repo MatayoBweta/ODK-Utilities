@@ -5,7 +5,7 @@
  */
 package org.unhcr.eg.odk.utilities.xlsform.model;
 
-import java.util.HashMap;
+import java.util.TreeMap;
 
 /**
  *
@@ -13,17 +13,17 @@ import java.util.HashMap;
  */
 public class Survey {
 
-    private final HashMap<Integer, Column> columns = new HashMap<>();
-    private final HashMap<Integer, Column> choicesColumns = new HashMap<>();
-    private final HashMap<Integer, Column> settingsColumns = new HashMap<>();
+    private final TreeMap<Integer, Column> columns = new TreeMap<>();
+    private final TreeMap<Integer, Column> choicesColumns = new TreeMap<>();
+    private final TreeMap<Integer, Column> settingsColumns = new TreeMap<>();
 
-    private final HashMap<String, String> settings = new HashMap<>();
-    private final HashMap<QuestionPosition, Question> questions = new HashMap<>();
-    private final HashMap<String, ListItem> choices = new HashMap<>();
+    private final TreeMap<String, String> settings = new TreeMap<>();
+    private final TreeMap<QuestionPosition, Question> questions = new TreeMap<>();
+    private final TreeMap<String, ListItem> choices = new TreeMap<>();
     private String default_language;
     private final static String DEFAULT_LANGUAGE = "ENG";
     private NextAction nextAction = NextAction.GIVE_NEXT;
-    private String currentQuestionNumber = "";
+    private String currentQuestionNumber = "0";
 
     public enum NextAction {
 
@@ -33,27 +33,27 @@ public class Survey {
 
     }
 
-    public HashMap<Integer, Column> getColumns() {
+    public TreeMap<Integer, Column> getColumns() {
         return columns;
     }
 
-    public HashMap<Integer, Column> getChoicesColumns() {
+    public TreeMap<Integer, Column> getChoicesColumns() {
         return choicesColumns;
     }
 
-    public HashMap<Integer, Column> getSettingsColumns() {
+    public TreeMap<Integer, Column> getSettingsColumns() {
         return settingsColumns;
     }
 
-    public HashMap<String, String> getSettings() {
+    public TreeMap<String, String> getSettings() {
         return settings;
     }
 
-    public HashMap<QuestionPosition, Question> getQuestions() {
+    public TreeMap<QuestionPosition, Question> getQuestions() {
         return questions;
     }
 
-    public HashMap<String, ListItem> getChoices() {
+    public TreeMap<String, ListItem> getChoices() {
         return choices;
     }
 

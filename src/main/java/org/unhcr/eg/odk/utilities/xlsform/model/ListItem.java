@@ -5,7 +5,7 @@
  */
 package org.unhcr.eg.odk.utilities.xlsform.model;
 
-import java.util.HashMap;
+import java.util.TreeMap;
 
 /**
  *
@@ -14,7 +14,7 @@ import java.util.HashMap;
 public class ListItem {
 
     private final String name;
-    private final HashMap<String, Item> listOfItems = new HashMap<>();
+    private final TreeMap<String, Item> listOfItems = new TreeMap<>();
 
     public ListItem(String name) {
         this.name = name;
@@ -24,7 +24,7 @@ public class ListItem {
         return name;
     }
 
-    public HashMap<String, Item> getListOfItems() {
+    public TreeMap<String, Item> getListOfItems() {
         return listOfItems;
     }
 

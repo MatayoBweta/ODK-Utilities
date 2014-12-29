@@ -9,7 +9,7 @@ package org.unhcr.eg.odk.utilities.xlsform.model;
  *
  * @author Stanyslas Matayo
  */
-public class QuestionPosition {
+public class QuestionPosition implements Comparable<QuestionPosition> {
 
     private int excelPosition;
     private String position;
@@ -36,6 +36,13 @@ public class QuestionPosition {
 
     public String getName() {
         return name;
+    }
+
+    @Override
+    public int compareTo(QuestionPosition o) {
+        Integer firstExcelP = excelPosition;
+        Integer secondExcelP = o.getExcelPosition();
+        return firstExcelP.compareTo(secondExcelP);
     }
 
 }
