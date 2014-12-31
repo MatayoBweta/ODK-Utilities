@@ -5,9 +5,14 @@
  */
 package org.unhcr.eg.odk.utilities.xlsform.controller;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.TreeMap;
 import java.util.Iterator;
 import java.util.StringTokenizer;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
@@ -321,7 +326,6 @@ public class SheetProcessor {
 
     protected static String getQuestionPosition(Question q, Survey survey) {
         String questionNumber = survey.getCurrentQuestionNumber();
-
         if (survey.getNextAction().equals(Survey.NextAction.GIVE_NEXT)) {
             String getLastNumber = survey.getCurrentQuestionNumber();
             if (!q.getType().isEndOfParentQuestion()) {
@@ -341,6 +345,14 @@ public class SheetProcessor {
 
         survey.setCurrentQuestionNumber(questionNumber);
         return questionNumber;
+    }
+
+    public static Survey processXLSForm(File file, String defaultLanguage) throws FileNotFoundException, IOException {
+        Workbook wb = new HSSFWorkbook(new FileInputStream(file));
+        Survey survey = SheetProcessor.processSettingsSheet(wb, new Survey(defaultLanguage));
+        survey = SheetProcessor.processChoicesSheet(wb, survey);
+        survey = SheetProcessor.processSurveySheet(wb, survey);
+        return survey;
     }
 
     public static String getNextToken(String getLastNumber) throws NumberFormatException {
