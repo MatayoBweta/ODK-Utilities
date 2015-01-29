@@ -7,7 +7,7 @@ package org.unhcr.eg.odk.utilities.xlsform.model.json;
 
 /**
  *
- * @author UNHCRuser
+ * @author Stanyslas Matayo
  */
 public class JsonQuestionLayout {
 

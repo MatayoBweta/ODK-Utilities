@@ -9,7 +9,7 @@ import java.util.List;
 
 /**
  *
- * @author UNHCRuser
+ * @author Stanyslas Matayo
  */
 public class JsonEnumQuestion extends JsonQuestion {
 

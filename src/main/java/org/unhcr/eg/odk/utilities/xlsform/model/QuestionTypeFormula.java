@@ -9,7 +9,7 @@ import org.unhcr.eg.odk.utilities.xlsform.XLSFormModel;
 
 /**
  *
- * @author UNHCRuser
+ * @author Stanyslas Matayo
  */
 public class QuestionTypeFormula extends Formula {
 

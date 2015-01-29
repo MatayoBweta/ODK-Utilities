@@ -9,7 +9,7 @@ import org.apache.commons.beanutils.DynaBean;
 
 /**
  *
- * @author UNHCRuser
+ * @author Stanyslas Matayo
  */
 public class JsonForm {
 
