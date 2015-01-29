@@ -23,6 +23,7 @@ public class Question {
     private Formula relevant;
     private Formula read_only;
     private Formula calculation;
+    private String path;
 
     public Question(QuestionTypeFormula type, String name, MultiLanguageValue label, Formula choice_filer, String default_value, MultiLanguageValue hint, Formula constraint, MultiLanguageValue constraint_message, Formula appearance, Formula relevant, Formula read_only, Formula calculation) {
         this.type = type;
@@ -139,5 +140,15 @@ public class Question {
     public void setCalculation(Formula calculation) {
         this.calculation = calculation;
     }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+    
+    
 
 }
